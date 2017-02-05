@@ -14,42 +14,21 @@ namespace Syncfolderi
     {
         string LeftPath;
         string RightPath;
-        string[] LeftFiles;
-        string[] LeftFolders;
-        string[] RightFiles;
-        string[] RightFolders;
+        
         SyncOperationStatistics stats;
 
-
-        public string SourcePath()
+       
+        public void SourcePath(string spath)
         {
-            return LeftPath;
+            LeftPath=spath;
         }
         
-        public string TargetPath()
+        public void TargetPath(string tpath)
         {
-            return RightPath;
+            RightPath=tpath;
         }
 
-        public string[] Sourcefiles()
-        {
-            return LeftFiles;
-        }
-
-        public string[] Sourcefolders()
-        {
-            return LeftFolders;
-        }
-
-        public string[] Targetfolders()
-        {
-            return RightFolders;
-        }
-
-        public string[] Targetfiles()
-        {
-            return RightFiles;
-        }
+       
 
         public string StatDownloadChangesApplied()
         {
@@ -82,38 +61,14 @@ namespace Syncfolderi
         }
 
 
-        public void TakeSource()
-        {
-           FolderBrowserDialog leftPanel = new FolderBrowserDialog();
-            if (leftPanel.ShowDialog() == DialogResult.OK)
-                {
-                
-                    LeftPath = leftPanel.SelectedPath;
-               
-                   LeftFiles = Directory.GetFiles(leftPanel.SelectedPath);
-                   LeftFolders = Directory.GetDirectories(leftPanel.SelectedPath);
-               
-                }
-        }
-
-        public void TakeTarget()
-        {
-            FolderBrowserDialog rightPanel = new FolderBrowserDialog();
-            if (rightPanel.ShowDialog() == DialogResult.OK)
-            {
-                RightPath = rightPanel.SelectedPath;
-               
-                 RightFiles = Directory.GetFiles(rightPanel.SelectedPath);
-                 RightFolders = Directory.GetDirectories(rightPanel.SelectedPath);
-                
-                
-            }
-        }
+            
 
 
         public void SyncFolder()
         {
             // Create file system provider
+
+
             FileSyncProvider providerA = new FileSyncProvider(LeftPath);
             FileSyncProvider providerB = new FileSyncProvider(RightPath);
 

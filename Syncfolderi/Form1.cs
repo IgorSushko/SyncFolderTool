@@ -15,75 +15,126 @@ namespace Syncfolderi
 {
     public partial class Form1 : Form
     {
-        //string[] arrayLeftfiles;
-        //string[] arrayRightfiles;
-
         ErrorProvider errorProvider;   //For Errors
-        Syncfolders bb1;    // for sync
+        Syncfolders syncfolders;    // for sync
+        FolderBrowserDialog leftPanel;
+        FolderBrowserDialog rightPanel;
+
+        string LeftPath;
+        string RightPath;
+        string[] LeftFiles;
+        string[] LeftFolders;
+        string[] RightFiles;
+        string[] RightFolders;
+
 
         public Form1()
         {
             InitializeComponent();
             errorProvider = new ErrorProvider();
-            bb1 = new Syncfolders();
+            syncfolders = new Syncfolders();
+            leftPanel  =  new FolderBrowserDialog();
+            rightPanel = new FolderBrowserDialog();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        
+
+        public void TakeSource()
         {
-            bb1.TakeSource();
-            label1.Text = bb1.SourcePath();
-            listBox1.Items.Clear();
-                foreach (string file in bb1.Sourcefiles())
-                        {
-                          listBox1.Items.Add(Path.GetFileName(file));
-                        }
-                foreach (string folder in bb1.Sourcefolders())
-                        {
-                          listBox1.Items.Add(Path.GetFileName(folder));
-                        }
+             
+            if (leftPanel.ShowDialog() == DialogResult.OK)
+            {          
+                LeftFiles = Directory.GetFiles(leftPanel.SelectedPath);
+                LeftFolders = Directory.GetDirectories(leftPanel.SelectedPath);
+
+            }
         }
 
 
-        private void button3_Click(object sender, EventArgs e)
+        public void TakeTarget()
         {
-            bb1.TakeTarget();
-            label2.Text = bb1.TargetPath();
-            listBox2.Items.Clear();
-                  foreach (string file5 in bb1.Targetfiles())
-                          {
-                             listBox2.Items.Add(Path.GetFileName(file5));
-                          }
-                 foreach (string folder5 in bb1.Targetfolders())
-                          {
-                             listBox2.Items.Add(Path.GetFileName(folder5));
-                          }
+            
+            if (rightPanel.ShowDialog() == DialogResult.OK)
+            {
+                
+                RightFiles = Directory.GetFiles(rightPanel.SelectedPath);
+                RightFolders = Directory.GetDirectories(rightPanel.SelectedPath);
+
+
+            }
         }
 
+        private void bSource_Click(object sender, EventArgs e)
+        {
+            
+            TakeSource();
+            Sourcelabel1.Text= leftPanel.SelectedPath;
+            syncfolders.SourcePath(leftPanel.SelectedPath);
+            SourceFiles.Items.Clear();
+
+
+            foreach (string file in LeftFiles) 
+            {
+                        SourceFiles.Items.Add(Path.GetFileName(file));
+                    }
+            foreach (string folder in LeftFolders)
+            {
+                        SourceFiles.Items.Add(Path.GetFileName(folder));
+                    }
+        }
+
+        private void bTarget_Click(object sender, EventArgs e)
+        {
+            TakeTarget();
+            targetlabel2.Text = rightPanel.SelectedPath;
+            syncfolders.TargetPath(rightPanel.SelectedPath);
+            TargetFiles.Items.Clear();
+
+
+            foreach (string file5 in RightFiles)
+                    {
+                        TargetFiles.Items.Add(Path.GetFileName(file5));
+                    }
+            foreach (string folder5 in RightFolders)
+                    {
+                        TargetFiles.Items.Add(Path.GetFileName(folder5));
+                    }
+        }
+
+        private void bSync_Click(object sender, EventArgs e)
+        {
+            if(String.IsNullOrEmpty(leftPanel.SelectedPath) || String.IsNullOrEmpty(rightPanel.SelectedPath))
+                {
+                    errorProvider.SetError(bSync, "Please select folders to Sync");
+                    return;
+                }
+            else
+                {
+                    errorProvider.Clear();
+                }
+
+            if (leftPanel.SelectedPath == rightPanel.SelectedPath)
+               {
+                    errorProvider.SetError(bSync, "Please select different folders to Sync");
+                    return;
+               }
+                    else
+               {
+                    errorProvider.Clear();
+               }
+
+            syncfolders.SyncFolder();
+
+            lStitistics.Items.Add("Download Applied: " + syncfolders.StatDownloadChangesApplied());
+            lStitistics.Items.Add("Download Failed: " + syncfolders.StatDownloadChangesFailed());
+            lStitistics.Items.Add("Download Total: " + syncfolders.StatDownloadChangesTotal());
+            lStitistics.Items.Add("Upload Total: " + syncfolders.StatUploadChangesApplied());
+            lStitistics.Items.Add("Upload Total: " + syncfolders.StatUploadChangesFailed());
+            lStitistics.Items.Add("Upload Total: " + syncfolders.StatUploadChangesTotal());
+        }
         private void listBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
 
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            if (String.IsNullOrEmpty(bb1.SourcePath()) || String.IsNullOrEmpty(bb1.TargetPath()))
-            {
-                errorProvider.SetError(button1, "Please select folders to Sync");
-                return;
-            }
-            else
-            {
-                errorProvider.Clear();
-            }
-
-            bb1.SyncFolder();
-
-            listBox3.Items.Add("Download Applied: " + bb1.StatDownloadChangesApplied());
-            listBox3.Items.Add("Download Failed: " + bb1.StatDownloadChangesFailed());
-            listBox3.Items.Add("Download Total: " + bb1.StatDownloadChangesTotal());
-            listBox3.Items.Add("Upload Total: " + bb1.StatUploadChangesApplied());
-            listBox3.Items.Add("Upload Total: " + bb1.StatUploadChangesFailed());
-            listBox3.Items.Add("Upload Total: " + bb1.StatUploadChangesTotal());
         }
     }
     }
